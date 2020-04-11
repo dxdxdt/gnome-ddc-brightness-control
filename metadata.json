@@ -1,0 +1,10 @@
+{
+  "name": "DDC Brightness Control",
+  "description": "Gnome extension to control display brightness via DDC",
+  "uuid": "ddc-brightness-control@bgornicki.gitlab.com",
+  "url": "https://gitlab.com/bgornicki/gnome-ddc-brightness-control",
+  "version": 1,
+  "shell-version": [
+    "3.28"
+  ]
+}
