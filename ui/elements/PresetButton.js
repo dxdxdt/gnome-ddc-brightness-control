@@ -9,21 +9,22 @@ const Lang = imports.lang;
 const Me = ExtensionUtils.getCurrentExtension();
 const ddcService = Me.imports.services.ddc;
 
-class RefreshButton extends PopupMenu.PopupImageMenuItem {
+class PresetButton extends PopupMenu.PopupMenuItem {
 
-    constructor(handler) {
-        super('Reload displays', 'view-refresh-symbolic');
+    constructor(value, handler) {
+        super(`${(value*100).toFixed(0)}%`, {
+            style_class: 'preset__item'
+        });
+        this.value = value;
         this.configureEvents(handler);
     }
 
     configureEvents(handler) {
         this.connect('activate', () => {
             if(handler) {
-                const displays = ddcService.getDisplays();
-                log('Button handler displays', displays);
-                handler(displays);
-                return Clutter.EVENT_STOP;
+                handler(this.value);
             }
         })
+
     }
 }

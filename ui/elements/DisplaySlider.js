@@ -22,30 +22,33 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
         this.timeout = null;
         this.treshold = 5;
 
-        const slider = new Slider.Slider(current / max);
+        this.slider = new Slider.Slider(current / max)
 
-        slider.connect('value-changed', (slider, value) => {
-            if (this.timeout) {
-                timer.clearTimeout(this.timeout);
-            }
-            this.timeout = timer.setTimeout(() => {
-                const brightness = this.normalizeValue(value)
-                if (Math.abs(brightness - this.current) > this.treshold) {
-                    log(`Set brightness ${brightness} on bus ${this.bus}`)
-                    ddcService.setDisplayBrightness(this.bus, brightness);
-                }
-            }, 500)
+        this.slider.connect('value-changed', (slider, value) => this._broadcastBrightness(value))
 
-        })
-
-        this.actor = slider.actor;
+        this.actor = this.slider.actor;
     }
 
-    normalizeValue(percent) {
+    setBrightness(percent) {
+        this.slider.setValue(percent);
+        this._broadcastBrightness(percent);
+    }
+
+    _normalizeValue(percent) {
         const value = percent * this.max
         return Number(value.toFixed(0))
     }
 
+    _broadcastBrightness(value) {
+        if (this.timeout) {
+            timer.clearTimeout(this.timeout);
+        }
+        this.timeout = timer.setTimeout(() => {
+            const brightness = this._normalizeValue(value)
+            log(`Set brightness ${brightness} on bus ${this.bus}`)
+            ddcService.setDisplayBrightness(this.bus, brightness);
+        }, 500)
+    }
 };
 
 class DisplaySlider extends PopupMenu.PopupMenuSection {
@@ -58,10 +61,12 @@ class DisplaySlider extends PopupMenu.PopupMenuSection {
 
         this.addMenuItem(displayLabel);
         this.addMenuItem(displaySlider);
+
+        this.slider = displaySlider;
     }
 
-    onUpdate(value) {
-        log(`${value}`);
+    setBrightness(percent) {
+        this.slider.setBrightness(percent);
     }
 
 }

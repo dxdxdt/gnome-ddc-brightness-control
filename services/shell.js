@@ -1,4 +1,6 @@
 const GLib = imports.gi.GLib;
+const Gio = imports.gi.Gio;
+const Clutter = imports.gi.Clutter;
 
 function exec(cmd) {
     try {

@@ -4,7 +4,7 @@
 
 const Mainloop = imports.mainloop;
 
-const setTimeout = function(func, millis /* , ... args */) {
+var setTimeout = function(func, millis /* , ... args */) {
 
     let args = [];
     if (arguments.length > 2) {
@@ -19,6 +19,6 @@ const setTimeout = function(func, millis /* , ... args */) {
     return id;
 };
 
-const clearTimeout = function(id) {
+var clearTimeout = function(id) {
     Mainloop.source_remove(id);
 };
