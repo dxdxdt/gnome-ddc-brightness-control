@@ -1,12 +1,6 @@
-const St = imports.gi.St;
 const ExtensionUtils = imports.misc.extensionUtils;
-const Clutter = imports.gi.Clutter;
-const GObject = imports.gi.GObject;
-const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const CheckBox = imports.ui.checkBox;
 const Slider = imports.ui.slider;
-const Lang = imports.lang;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const ddcService = Me.imports.services.ddc;
@@ -22,9 +16,9 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
         this.timeout = null;
         this.treshold = 5;
 
-        this.slider = new Slider.Slider(current / max)
+        this.slider = new Slider.Slider(current / max);
 
-        this.slider.connect('value-changed', (slider, value) => this._broadcastBrightness(value))
+        this.slider.connect('value-changed', (slider, value) => this._broadcastBrightness(value));
 
         this.actor = this.slider.actor;
     }
@@ -35,8 +29,8 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
     }
 
     _normalizeValue(percent) {
-        const value = percent * this.max
-        return Number(value.toFixed(0))
+        const value = percent * this.max;
+        return Number(value.toFixed(0));
     }
 
     _broadcastBrightness(value) {
@@ -44,13 +38,14 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
             timer.clearTimeout(this.timeout);
         }
         this.timeout = timer.setTimeout(() => {
-            const brightness = this._normalizeValue(value)
-            log(`Set brightness ${brightness} on bus ${this.bus}`)
+            const brightness = this._normalizeValue(value);
+            log(`Set brightness ${brightness} on bus ${this.bus}`);
             ddcService.setDisplayBrightness(this.bus, brightness);
-        }, 500)
+        }, 500);
     }
-};
+}
 
+// eslint-disable-next-line no-unused-vars
 class DisplaySlider extends PopupMenu.PopupMenuSection {
 
     constructor(bus, name, current, max) {

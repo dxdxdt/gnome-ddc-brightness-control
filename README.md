@@ -24,3 +24,11 @@ Enable extension:
 Restart GNOME:
 
  - Press `Alt + F2`, type `r` and press `Enter`.
+
+
+# Development
+
+## Linter
+
+`npm i eslint`
+`node_modules/eslint/eslint .`

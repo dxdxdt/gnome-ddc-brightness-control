@@ -1,10 +1,9 @@
 const GLib = imports.gi.GLib;
-const Gio = imports.gi.Gio;
-const Clutter = imports.gi.Clutter;
 
+// eslint-disable-next-line no-unused-vars
 function exec(cmd) {
     try {
-        let [res, out] = GLib.spawn_command_line_sync(cmd);
+        let [, out] = GLib.spawn_command_line_sync(cmd);
         const response = out.toString();
         return response;
     } catch (err) {
@@ -12,9 +11,10 @@ function exec(cmd) {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 function execAsync(cmd) {
     try {
-        let [res, out] = GLib.spawn_command_line_async(cmd);
+        let [, out] = GLib.spawn_command_line_async(cmd);
         const response = out.toString();
         return response;
     } catch (err) {

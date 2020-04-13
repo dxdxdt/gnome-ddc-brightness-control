@@ -4,21 +4,18 @@
 
 const Mainloop = imports.mainloop;
 
-var setTimeout = function(func, millis /* , ... args */) {
-
-    let args = [];
-    if (arguments.length > 2) {
-        args = args.slice.call(arguments, 2);
-    }
+// eslint-disable-next-line no-unused-vars
+function setTimeout(func, millis, ...args) {
 
     let id = Mainloop.timeout_add(millis, () => {
-        func.apply(null, args);
+        func(...args);
         return false; // Stop repeating
     }, null);
 
     return id;
-};
+}
 
-var clearTimeout = function(id) {
+// eslint-disable-next-line no-unused-vars
+function clearTimeout(id) {
     Mainloop.source_remove(id);
-};
+}
