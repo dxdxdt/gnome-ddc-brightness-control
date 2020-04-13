@@ -1,0 +1,30 @@
+variables:
+  ZIP_NAME: ddc-brightness-control@bgornicki.gitlab.com.zip
+
+image: node:12-alpine
+
+stages:
+  - lint
+  - release
+
+eslint:
+  stage: lint
+  only:
+    - master
+    - merge_requests
+  script:
+    - npm i eslint
+    - node_modules/eslint/bin/eslint.js src/
+
+release:
+  stage: release
+  only:
+    - master
+  before_script:
+    - apk update
+    - apk add zip
+  script:
+    - cd src && zip -r ../$ZIP_NAME . && cd -
+  artifacts:
+    paths:
+      - $ZIP_NAME

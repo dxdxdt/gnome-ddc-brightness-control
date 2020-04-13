@@ -6,7 +6,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const ddcService = Me.imports.services.ddc;
 
 // eslint-disable-next-line no-unused-vars
-class RefreshButton extends PopupMenu.PopupImageMenuItem {
+var RefreshButton = class RefreshButton extends PopupMenu.PopupImageMenuItem {
 
     constructor(handler) {
         super('Reload displays', 'view-refresh-symbolic');
@@ -23,4 +23,4 @@ class RefreshButton extends PopupMenu.PopupImageMenuItem {
             }
         });
     }
-}
+};

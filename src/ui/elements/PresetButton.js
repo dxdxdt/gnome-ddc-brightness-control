@@ -1,7 +1,7 @@
 const PopupMenu = imports.ui.popupMenu;
 
 // eslint-disable-next-line no-unused-vars
-class PresetButton extends PopupMenu.PopupMenuItem {
+var PresetButton =  class PresetButton extends PopupMenu.PopupMenuItem {
 
     constructor(value, handler) {
         super(`${(value * 100).toFixed(0)}%`, {
@@ -19,4 +19,4 @@ class PresetButton extends PopupMenu.PopupMenuItem {
         });
 
     }
-}
+};

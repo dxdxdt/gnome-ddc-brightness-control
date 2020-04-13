@@ -58,22 +58,24 @@ var BrightnessPanel = class BrightnessPanel extends PanelMenu.Button {
         this.buttonsSection.destroy();
 
         this.displaysSection = new PopupMenu.PopupMenuSection();
-        this.buttonsSection = new PopupMenu.PopupSubMenuMenuItem('Presets');
+        this.buttonsSection = new PopupMenu.PopupMenuSection();
 
         if (displays) {
-            log('Displays exists, adding');
             for (const display of displays) {
                 const slider = new DisplaySlider(display.bus, `${display.name} : ${display.serialNumber}`, display.current, display.max);
-                this.displaysSection.addMenuItem(slider);
-                this.displaysSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
                 this.sliders.push(slider);
+                this.displaysSection.addMenuItem(slider);
             }
+
+            this.buttonPreset = new PopupMenu.PopupSubMenuMenuItem('Presets');
 
             for (let i = 0.1; i < 1; i += 0.1) {
-                this.buttonsSection.menu.addMenuItem(new PresetButton(i, value => this.setGroupBrightness(value)));
+                this.buttonPreset.menu.addMenuItem(new PresetButton(i, value => this.setGroupBrightness(value)));
             }
+            this.buttonsSection.addMenuItem(this.buttonPreset);
 
             this.menu.addMenuItem(this.displaysSection);
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.menu.addMenuItem(this.buttonsSection);
         }
     }

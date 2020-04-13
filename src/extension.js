@@ -9,7 +9,7 @@ const Panel = Me.imports.ui.Panel;
 let panel;
 
 function init() {
-    log(`initializing ${Me.metadata.name} version ${Me.metadata.version}`);
+    log(`Initializing ${Me.metadata.name} version ${Me.metadata.version}`);
 }
 
 function enable() {

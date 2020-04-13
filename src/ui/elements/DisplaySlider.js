@@ -46,12 +46,12 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
 }
 
 // eslint-disable-next-line no-unused-vars
-class DisplaySlider extends PopupMenu.PopupMenuSection {
+var DisplaySlider = class DisplaySlider extends PopupMenu.PopupMenuSection {
 
     constructor(bus, name, current, max) {
         super(bus, name, current, max);
 
-        const displayLabel = new PopupMenu.PopupMenuItem(name, {hover: false, reactive: false, can_focus: false});
+        const displayLabel = new PopupMenu.PopupMenuItem(name, {hover: false, reactive: false, can_focus: false, style_class: 'slider__label'});
         const displaySlider = new SliderItem(bus, current, max, {hover: false, reactive: false});
 
         this.addMenuItem(displayLabel);
@@ -63,5 +63,4 @@ class DisplaySlider extends PopupMenu.PopupMenuSection {
     setBrightness(percent) {
         this.slider.setBrightness(percent);
     }
-
-}
+};

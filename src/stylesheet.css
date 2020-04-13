@@ -1,1 +1,9 @@
-/* Add your custom extension styling here */
+.slider {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.slider__label {
+    margin-top: 20px;
+}
+
