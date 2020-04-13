@@ -32,9 +32,6 @@ var BrightnessPanel = new Lang.Class({
         this.actor.add_child(box);
 
         this.reloadButton = new RefreshButton( (displays) => this.reloadDisplays(displays));
-        this.reloadButton.connect('custom-activate', () => {
-            log('PRZECHWYCONO EVENT !!!!!!!');
-        })
         this.displaysSection = new PopupMenu.PopupMenuSection();
         this.buttonsSection = new PopupMenu.PopupSubMenuMenuItem('Presets');
 
