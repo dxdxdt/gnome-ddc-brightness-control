@@ -11,6 +11,12 @@ Simple GNOME extension to control displays' brightness via DDC.
 
 ## Installation
 
+### Official GNOME Shell Extensions website
+
+[![get-it-on-ego](https://user-images.githubusercontent.com/4411084/79335031-a4938100-7f21-11ea-981c-a629684967b1.png)](https://extensions.gnome.org/extension/2944/ddc-brightness-control/)
+
+### Manually from git repository
+
 Prepare extension directory:
 
 ```bash
