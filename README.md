@@ -49,6 +49,12 @@ Alternatively, you can inspect stderr with `journalctl -f` and then reloading GN
 
 Contributions are welcome but make sure you follow [requirements and tips for getting your GNOME Shell Extension approved](https://wiki.gnome.org/Projects/GnomeShell/Extensions/Review).
 
+## Compiling settings schemas
+
+If you add or change settings, you need to recompile schemas with: 
+
+```glib-compile-schemas src/schemas/```
+
 ### ESLint
 
 Gitlab CI/CD is configured to fire `eslint` job on every merge request. Changes cannot be merged if the pipeline fails. 

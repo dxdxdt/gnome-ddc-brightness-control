@@ -3,6 +3,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Clutter = imports.gi.Clutter;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
+const Gio = imports.gi.Gio;
 
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -18,12 +19,26 @@ var BrightnessPanel = class BrightnessPanel extends PanelMenu.Button {
 
         this.displays = null;
 
+        const gschema = Gio.SettingsSchemaSource.new_from_directory(
+            Me.dir.get_child('schemas').get_path(),
+            Gio.SettingsSchemaSource.get_default(),
+            false
+        );
+
+        this.settings = new Gio.Settings({settings_schema: gschema.lookup('bgornicki.ddc.brightness.control', true)});
+        this.showIconOnly = this.settings.get_value('show-icon-only').deep_unpack();
+
         const box = new St.BoxLayout();
         const icon =  new St.Icon({icon_name: 'display-brightness-symbolic', style_class: 'system-status-icon'});
-        const toplabel = new St.Label({text: ' Brightness ', y_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        this.toplabel = new St.Label({text: this.showIconOnly ? '' : ' Brightness ', y_expand: true, y_align: Clutter.ActorAlign.CENTER});
+
+        this.onShowIconOnlyChange = this.settings.connect(
+            'changed::show-icon-only',
+            this._onShowIconOnlyChange.bind(this)
+        );
 
         box.add(icon);
-        box.add(toplabel);
+        box.add(this.toplabel);
         box.add(PopupMenu.arrowIcon(St.Side.BOTTOM));
 
         this.actor.add_child(box);
@@ -34,6 +49,11 @@ var BrightnessPanel = class BrightnessPanel extends PanelMenu.Button {
 
         this.drawMenu();
 
+    }
+
+    _onShowIconOnlyChange() {
+        this.showIconOnly = this.settings.get_value('show-icon-only').deep_unpack();
+        this.toplabel.text = this.showIconOnly ? '' : ' Brightness ';
     }
 
     destroy() {

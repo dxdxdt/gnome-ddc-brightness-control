@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema id="bgornicki.ddc.brightness.control" path="/bgornicki/ddc/brightness/control/">
+        <key name="show-icon-only" type="b">
+            <default>false</default>
+        </key>
+    </schema>
+</schemalist>

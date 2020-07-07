@@ -14,7 +14,7 @@ function init() {
 
 function enable() {
     panel = new Panel.BrightnessPanel();
-    Main.panel.addToStatusArea('PopupMenuExample', panel, 0, 'right');
+    Main.panel.addToStatusArea('ddc-brightness-control', panel, 0, 'right');
 }
 
 function disable() {
