@@ -1,23 +1,17 @@
-const GLib = imports.gi.GLib;
+import Gio from 'gi://Gio';
 
 // eslint-disable-next-line no-unused-vars
-function exec(cmd) {
-    try {
-        let [, out] = GLib.spawn_command_line_sync(cmd);
-        const response = out.toString();
-        return response;
-    } catch (err) {
-        return null;
-    }
-}
+export async function exec(cmd) {
+    // log(cmd); // TODO: comment out
+    const proc = Gio.Subprocess.new(
+        cmd.split(/\s+/),
+        Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
 
-// eslint-disable-next-line no-unused-vars
-function execAsync(cmd) {
-    try {
-        let [, out] = GLib.spawn_command_line_async(cmd);
-        const response = out.toString();
-        return response;
-    } catch (err) {
-        return null;
+    const ret = await proc.communicate_utf8(null, null);
+
+    if (proc.get_successful()) {
+        return ret.slice(1);
     }
+
+    throw new Error(ret);
 }

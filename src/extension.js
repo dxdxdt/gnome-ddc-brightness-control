@@ -1,22 +1,25 @@
 'use strict';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Main = imports.ui.main;
+import {BrightnessPanel} from './ui/Panel.js';
 
-const Me = ExtensionUtils.getCurrentExtension();
-const Panel = Me.imports.ui.Panel;
+export default class DDCBrightnessControlExtension extends Extension {
+    // constructor () {
+    //     super();
+    //     this._panel = null;
 
-let panel;
+    //     // log(`Initializing ${this.name} version ${this.version}`);
+    // }
 
-function init() {
-    log(`Initializing ${Me.metadata.name} version ${Me.metadata.version}`);
-}
+    enable() {
+        this._panel = new BrightnessPanel(this.getSettings());
+        Main.panel.addToStatusArea(this.uuid, this._panel);
+    }
 
-function enable() {
-    panel = new Panel.BrightnessPanel();
-    Main.panel.addToStatusArea('ddc-brightness-control', panel, 0, 'right');
-}
-
-function disable() {
-    panel.destroy();
-}
+    disable() {
+        this._panel?.destroy();
+        this._panel = null;
+    }
+};

@@ -1,39 +1,61 @@
-'use strict';
-
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const shell = Me.imports.services.shell;
+import * as shell from './shell.js';
 
 // eslint-disable-next-line no-unused-vars
-function getDisplays() {
+export async function getDisplays() {
 
-    const result = shell.exec('ddcutil detect --brief');
+    const result = (await shell.exec('ddcutil detect --brief'))[0];
+    // lines that do not start with a whitespace
+    const entries = result.split(/^[^\s].*$/gim);
     const displays = [];
+    let i;
 
-    result.split('Display ').forEach(group => {
-        const lines = group.split('\n');
-        const bus = lines[1] ? lines[1].split('/dev/i2c-')[1].trim() : null;
-        const description = lines[2] ? lines[2].split('Monitor:')[1].trim() : null;
-        const name = description ? description.split(':')[1] : null;
-        const serialNumber = description ? description.split(':')[2] : null;
-
-        if (bus && name && serialNumber) {
-            const {current, max} = getDisplayBrightness(bus);
-            displays.push({
-                bus,
-                name,
-                serialNumber,
-                current,
-                max
-            });
+    for (i = 0; i < entries.length; i += 1) {
+        if (!entries[i] || !entries[i].trim()) {
+            continue;
         }
-    });
+        const lines = entries[i].split('\n');
+        let bus, monitor, name, serialNumber;
+
+        lines.forEach (l => {
+            l = l.trim();
+            const sep = l.search(':');
+
+            if (sep < 0) {
+                return;
+            }
+            switch (l.substring(0, sep).toLowerCase()) {
+            case "i2c bus":
+                bus = l.substring(l.search(/(\d+)$/));
+                 break;
+            case "monitor": monitor = l.substring(sep + 1); break;
+            }
+        });
+
+        if (!bus) {
+            continue;
+        }
+        if (monitor) {
+            try {
+                // trying getting the brightness of an "invalid display" will
+                // throw
+                const {current, max} = await getDisplayBrightness(bus);
+                const arr = monitor.split(':');
+
+                name = arr[1] || bus;
+                serialNumber = arr[2] || "";
+
+                displays.push({ bus, name, serialNumber, current, max });
+            }
+            catch (e) {}
+        }
+    };
 
     return displays;
 }
 
-function getDisplayBrightness(bus) {
-    const result = shell.exec(`ddcutil getvcp 10 --nodetect --bus ${bus} --brief`).split(' ');
+export async function getDisplayBrightness(bus) {
+    const result = (await shell.exec(`ddcutil getvcp 10 --bus ${bus} --brief`))[0].split(' ');
+
     return {
         current: result[3],
         max: result[4]
@@ -41,7 +63,7 @@ function getDisplayBrightness(bus) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function setDisplayBrightness(bus, value) {
-    const result = shell.execAsync(`ddcutil setvcp 10 ${value} --nodetect --bus ${bus}`);
-    log(result);
+export async function setDisplayBrightness(bus, value) {
+    const result = await shell.exec(`ddcutil setvcp 10 ${value} --bus ${bus}`);
+    // log(result);
 }

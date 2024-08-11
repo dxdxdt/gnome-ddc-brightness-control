@@ -1,12 +1,10 @@
-const ExtensionUtils = imports.misc.extensionUtils;
-const Clutter = imports.gi.Clutter;
-const PopupMenu = imports.ui.popupMenu;
-
-const Me = ExtensionUtils.getCurrentExtension();
-const ddcService = Me.imports.services.ddc;
+import GObject from 'gi://GObject';
+import Clutter from 'gi://Clutter';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 // eslint-disable-next-line no-unused-vars
-var RefreshButton = class RefreshButton extends PopupMenu.PopupImageMenuItem {
+export const RefreshButton = GObject.registerClass(
+class RefreshButton extends PopupMenu.PopupImageMenuItem {
 
     constructor(handler) {
         super('Reload displays', 'view-refresh-symbolic');
@@ -16,11 +14,13 @@ var RefreshButton = class RefreshButton extends PopupMenu.PopupImageMenuItem {
     configureEvents(handler) {
         this.connect('activate', () => {
             if (handler) {
-                const displays = ddcService.getDisplays();
-                log('Button handler displays', displays);
-                handler(displays);
-                return Clutter.EVENT_STOP;
+                try {
+                    handler();
+                }
+                finally {
+                    return Clutter.EVENT_STOP;
+                }
             }
         });
     }
-};
+});

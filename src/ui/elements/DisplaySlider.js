@@ -1,11 +1,11 @@
-const ExtensionUtils = imports.misc.extensionUtils;
-const PopupMenu = imports.ui.popupMenu;
-const Slider = imports.ui.slider;
+import GObject from 'gi://GObject';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as Slider from 'resource:///org/gnome/shell/ui/slider.js';
 
-const Me = ExtensionUtils.getCurrentExtension();
-const ddcService = Me.imports.services.ddc;
-const timer = Me.imports.services.timer;
+import * as ddcService from '../../services/ddc.js';
+import * as timer from '../../services/timer.js';
 
+const SliderItem = GObject.registerClass(
 class SliderItem extends PopupMenu.PopupBaseMenuItem {
     constructor(bus, current, max, params) {
         super(params);
@@ -17,14 +17,12 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
         this.treshold = 5;
 
         this.slider = new Slider.Slider(current / max);
-
-        this.slider.connect('value-changed', (slider, value) => this._broadcastBrightness(value));
-
-        this.actor = this.slider.actor;
+        this.slider.connect('drag-end', (...args) => this._broadcastBrightness(this.slider.value));
+        this.add_child(this.slider);
     }
 
     setBrightness(percent) {
-        this.slider.setValue(percent);
+        this.slider.value = percent;
         this._broadcastBrightness(percent);
     }
 
@@ -43,10 +41,10 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
             ddcService.setDisplayBrightness(this.bus, brightness);
         }, 500);
     }
-}
+});
 
 // eslint-disable-next-line no-unused-vars
-var DisplaySlider = class DisplaySlider extends PopupMenu.PopupMenuSection {
+export class DisplaySlider extends PopupMenu.PopupMenuSection {
 
     constructor(bus, name, current, max) {
         super(bus, name, current, max);

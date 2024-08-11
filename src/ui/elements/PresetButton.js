@@ -1,7 +1,9 @@
-const PopupMenu = imports.ui.popupMenu;
+import GObject from 'gi://GObject';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 // eslint-disable-next-line no-unused-vars
-var PresetButton =  class PresetButton extends PopupMenu.PopupMenuItem {
+export const PresetButton = GObject.registerClass(
+class PresetButton extends PopupMenu.PopupMenuItem {
 
     constructor(value, handler) {
         super(`${(value * 100).toFixed(0)}%`, {
@@ -19,4 +21,4 @@ var PresetButton =  class PresetButton extends PopupMenu.PopupMenuItem {
         });
 
     }
-};
+});

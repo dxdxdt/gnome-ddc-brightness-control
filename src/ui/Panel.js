@@ -1,31 +1,21 @@
-const St = imports.gi.St;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Clutter = imports.gi.Clutter;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const Gio = imports.gi.Gio;
-
-const Me = ExtensionUtils.getCurrentExtension();
-
-const {RefreshButton} = Me.imports.ui.elements.RefreshButton;
-const {DisplaySlider} = Me.imports.ui.elements.DisplaySlider;
-const {PresetButton} = Me.imports.ui.elements.PresetButton;
+import St from 'gi://St';
+import Clutter from 'gi://Clutter';
+import GObject from 'gi://GObject';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {RefreshButton} from './elements/RefreshButton.js';
+import {DisplaySlider} from './elements/DisplaySlider.js';
+import {PresetButton} from './elements/PresetButton.js';
+import * as ddcService from '../services/ddc.js';
 
 // eslint-disable-next-line no-unused-vars
-var BrightnessPanel = class BrightnessPanel extends PanelMenu.Button {
-
-    constructor() {
+export const BrightnessPanel = GObject.registerClass(
+class BrightnessPanel extends PanelMenu.Button {
+    constructor(settings) {
         super(1, 'BrightnessPanel', false);
 
         this.displays = null;
-
-        const gschema = Gio.SettingsSchemaSource.new_from_directory(
-            Me.dir.get_child('schemas').get_path(),
-            Gio.SettingsSchemaSource.get_default(),
-            false
-        );
-
-        this.settings = new Gio.Settings({settings_schema: gschema.lookup('bgornicki.ddc.brightness.control', true)});
+        this.settings = settings;
         this.showIconOnly = this.settings.get_value('show-icon-only').deep_unpack();
 
         const box = new St.BoxLayout();
@@ -37,13 +27,12 @@ var BrightnessPanel = class BrightnessPanel extends PanelMenu.Button {
             this._onShowIconOnlyChange.bind(this)
         );
 
-        box.add(icon);
-        box.add(this.toplabel);
-        box.add(PopupMenu.arrowIcon(St.Side.BOTTOM));
+        box.add_child(icon);
+        box.add_child(this.toplabel);
+        box.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
+        this.add_child(box);
 
-        this.actor.add_child(box);
-
-        this.reloadButton = new RefreshButton(displays => this.reloadDisplays(displays));
+        this.reloadButton = new RefreshButton(() => this.reloadDisplays());
         this.displaysSection = new PopupMenu.PopupMenuSection();
         this.buttonsSection = new PopupMenu.PopupSubMenuMenuItem('Presets');
 
@@ -71,7 +60,9 @@ var BrightnessPanel = class BrightnessPanel extends PanelMenu.Button {
         });
     }
 
-    reloadDisplays(displays) {
+    async reloadDisplays() {
+        // log('Button handler displays', displays);
+
         this.sliders = [];
 
         this.displaysSection.destroy();
@@ -80,24 +71,33 @@ var BrightnessPanel = class BrightnessPanel extends PanelMenu.Button {
         this.displaysSection = new PopupMenu.PopupMenuSection();
         this.buttonsSection = new PopupMenu.PopupMenuSection();
 
-        if (displays) {
-            for (const display of displays) {
-                const slider = new DisplaySlider(display.bus, `${display.name} : ${display.serialNumber}`, display.current, display.max);
-                this.sliders.push(slider);
-                this.displaysSection.addMenuItem(slider);
+
+        try {
+            const displays = await ddcService.getDisplays();
+
+            if (displays) {
+                for (const display of displays) {
+                    const slider = new DisplaySlider(display.bus, `${display.name} : ${display.serialNumber}`, display.current, display.max);
+                    this.sliders.push(slider);
+                    this.displaysSection.addMenuItem(slider);
+                }
+
+                this.buttonPreset = new PopupMenu.PopupSubMenuMenuItem('Presets');
+
+                for (let i = 0.1; i < 1; i += 0.1) {
+                    this.buttonPreset.menu.addMenuItem(new PresetButton(i, value => this.setGroupBrightness(value)));
+                }
+                this.buttonsSection.addMenuItem(this.buttonPreset);
+
+                this.menu.addMenuItem(this.displaysSection);
+                this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+                this.menu.addMenuItem(this.buttonsSection);
             }
-
-            this.buttonPreset = new PopupMenu.PopupSubMenuMenuItem('Presets');
-
-            for (let i = 0.1; i < 1; i += 0.1) {
-                this.buttonPreset.menu.addMenuItem(new PresetButton(i, value => this.setGroupBrightness(value)));
-            }
-            this.buttonsSection.addMenuItem(this.buttonPreset);
-
-            this.menu.addMenuItem(this.displaysSection);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this.menu.addMenuItem(this.buttonsSection);
+        }
+        catch (e) {
+            log(e);
+            throw e;
         }
     }
 
-};
+});

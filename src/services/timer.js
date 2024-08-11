@@ -1,21 +1,17 @@
-/**
- * Taken from: https://github.com/optimisme/gjs-examples/blob/master/assets/timers.js
- */
-
-const Mainloop = imports.mainloop;
+import GLib from 'gi://GLib';
 
 // eslint-disable-next-line no-unused-vars
-function setTimeout(func, millis, ...args) {
+export function setTimeout(func, millis, ...args) {
 
-    let id = Mainloop.timeout_add(millis, () => {
+    let id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, millis, () => {
         func(...args);
         return false; // Stop repeating
-    }, null);
+    });
 
     return id;
 }
 
 // eslint-disable-next-line no-unused-vars
-function clearTimeout(id) {
-    Mainloop.source_remove(id);
+export function clearTimeout(id) {
+    GLib.Source.remove(id);
 }
