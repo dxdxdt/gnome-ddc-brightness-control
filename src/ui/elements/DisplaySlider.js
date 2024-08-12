@@ -49,8 +49,8 @@ export class DisplaySlider extends PopupMenu.PopupMenuSection {
     constructor(bus, name, current, max) {
         super(bus, name, current, max);
 
-        const displayLabel = new PopupMenu.PopupMenuItem(name, {hover: false, reactive: false, can_focus: false, style_class: 'slider__label'});
-        const displaySlider = new SliderItem(bus, current, max, {hover: false, reactive: false});
+        const displayLabel = new PopupMenu.PopupMenuItem(name, {can_focus: false, reactive: false, style_class: 'slider__label'});
+        const displaySlider = new SliderItem(bus, current, max, {hover: false});
 
         this.addMenuItem(displayLabel);
         this.addMenuItem(displaySlider);

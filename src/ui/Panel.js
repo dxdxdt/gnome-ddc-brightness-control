@@ -12,7 +12,7 @@ import * as ddcService from '../services/ddc.js';
 export const BrightnessPanel = GObject.registerClass(
 class BrightnessPanel extends PanelMenu.Button {
     constructor(settings) {
-        super(1, 'BrightnessPanel', false);
+        super(1, 'DDCBrightnessPanel', false);
 
         this.displays = null;
         this.settings = settings;
@@ -20,7 +20,7 @@ class BrightnessPanel extends PanelMenu.Button {
 
         const box = new St.BoxLayout();
         const icon =  new St.Icon({icon_name: 'display-brightness-symbolic', style_class: 'system-status-icon'});
-        this.toplabel = new St.Label({text: this.showIconOnly ? '' : ' Brightness ', y_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        this.toplabel = new St.Label({text: this.showIconOnly ? '' : ' DDC ', y_expand: true, y_align: Clutter.ActorAlign.CENTER});
 
         this.onShowIconOnlyChange = this.settings.connect(
             'changed::show-icon-only',
@@ -42,11 +42,7 @@ class BrightnessPanel extends PanelMenu.Button {
 
     _onShowIconOnlyChange() {
         this.showIconOnly = this.settings.get_value('show-icon-only').deep_unpack();
-        this.toplabel.text = this.showIconOnly ? '' : ' Brightness ';
-    }
-
-    destroy() {
-        this.parent();
+        this.toplabel.text = this.showIconOnly ? '' : ' DDC ';
     }
 
     drawMenu() {
@@ -76,6 +72,8 @@ class BrightnessPanel extends PanelMenu.Button {
             const displays = await ddcService.getDisplays();
 
             if (displays) {
+                this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
                 for (const display of displays) {
                     const slider = new DisplaySlider(display.bus, `${display.name} : ${display.serialNumber}`, display.current, display.max);
                     this.sliders.push(slider);
