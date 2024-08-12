@@ -16,8 +16,15 @@ class SliderItem extends PopupMenu.PopupBaseMenuItem {
         this.timeout = null;
         this.treshold = 5;
 
+        // {track_hover: true} could be used, but the interface does not expose
+        // it.
         this.slider = new Slider.Slider(current / max);
         this.slider.connect('drag-end', (...args) => this._broadcastBrightness(this.slider.value));
+        this.slider.connect('destroy', (...args) => {
+            if (this.timeout) {
+                timer.clearTimeout(this.timeout);
+            }
+        });
         this.add_child(this.slider);
     }
 
@@ -50,7 +57,7 @@ export class DisplaySlider extends PopupMenu.PopupMenuSection {
         super(bus, name, current, max);
 
         const displayLabel = new PopupMenu.PopupMenuItem(name, {can_focus: false, reactive: false, style_class: 'slider__label'});
-        const displaySlider = new SliderItem(bus, current, max, {hover: false});
+        const displaySlider = new SliderItem(bus, current, max, {});
 
         this.addMenuItem(displayLabel);
         this.addMenuItem(displaySlider);
